@@ -1,3 +1,7 @@
-name = "okf-site"
+name = "okf-website"
 main = "src/index.js"
 compatibility_date = "2025-01-01"
+
+routes = [
+  { pattern = "useokf.com", custom_domain = true }
+]
