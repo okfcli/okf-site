@@ -323,7 +323,7 @@ footer .disclaimer { margin-top: 16px; font-size: 0.75rem; max-width: 600px; mar
 
 <!-- Hero -->
 <div class="hero">
-  <div class="badge fade-up"><span class="dot"></span> Pre-v1 · 11 commands · 35 tests · Apache 2.0</div>
+  <div class="badge fade-up"><span class="dot"></span> v0.1.0 released — brew install okfcli/okf/okf</div>
   <h1 class="fade-up fade-up-delay-1">The CLI your AI agent <span class="gradient">drives</span> to manage your knowledge graph</h1>
   <p class="sub fade-up fade-up-delay-2">okf is a Go CLI toolkit for the Open Knowledge Format — agentic-first, JSON-native, vendor-neutral. A single binary alternative to Google's Python/Gemini-locked reference implementation.</p>
   <div class="cta-group fade-up fade-up-delay-3">
@@ -535,9 +535,13 @@ footer .disclaimer { margin-top: 16px; font-size: 0.75rem; max-width: 600px; mar
 <section id="install">
   <div class="section-label">Get started</div>
   <h2 class="section-title">Install in 30 seconds</h2>
-  <p class="section-desc">okf is pre-v1 — no release tarballs or Homebrew yet. Install via Go or build from source. One binary, no runtime dependencies.</p>
+  <p class="section-desc">v0.1.0 released — cosign-signed, SBOM-included. One binary, no runtime dependencies.</p>
 
   <div class="install-grid">
+    <div class="install-card">
+      <h4>Homebrew (macOS / Linux)</h4>
+      <code>brew install okfcli/okf/okf</code>
+    </div>
     <div class="install-card">
       <h4>Go install</h4>
       <code>go install github.com/okfcli/okf/cmd/okf@latest</code>
@@ -601,7 +605,7 @@ cd okf && make build
   <div class="disclaimer">
     okf is an independent, community-built CLI for the Open Knowledge Format. It is not affiliated with, endorsed by, or sponsored by Google. OKF is an open format from the Google knowledge-catalog repository, used here under its Apache 2.0 license.
   </div>
-  <div style="margin-top: 12px;">Built by Akeem Jenkins</div>
+  <div style="margin-top: 12px;">Built by <a href="https://akeemjenkins.com">Akeem Jenkins</a></div>
 </footer>
 
 </body>
