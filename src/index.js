@@ -4,10 +4,25 @@ import { withAICrawlerTracking } from '@datafast/ai-crawl';
 // below), reused for server-side AI-crawler (bot) tracking.
 const DATAFAST_WEBSITE_ID = 'dfid_kJWuBrZXvlBAN4FnNThxX';
 
+// Plain-text response (used for robots.txt, llms.txt, llms-full.txt).
+const text = (body) =>
+  new Response(body, {
+    headers: { 'Content-Type': 'text/plain;charset=UTF-8', 'Cache-Control': 'public, max-age=3600' },
+  });
+
 const handler = async (request) => {
   const url = new URL(request.url);
-  if (url.pathname === '/robots.txt') {
-    return new Response('User-agent: *\nAllow: /\n', { headers: { 'Content-Type': 'text/plain' } });
+  switch (url.pathname) {
+    case '/robots.txt':
+      return text(ROBOTS_TXT);
+    case '/llms.txt':
+      return text(LLMS_TXT);
+    case '/llms-full.txt':
+      return text(LLMS_FULL_TXT);
+    case '/sitemap.xml':
+      return new Response(SITEMAP_XML, {
+        headers: { 'Content-Type': 'application/xml;charset=UTF-8', 'Cache-Control': 'public, max-age=3600' },
+      });
   }
   return new Response(HTML, {
     headers: {
@@ -22,6 +37,157 @@ const handler = async (request) => {
 export default {
   fetch: withAICrawlerTracking(handler, { websiteId: DATAFAST_WEBSITE_ID }),
 };
+
+const ROBOTS_TXT = `# okf (useokf.com) welcomes AI crawlers and assistants.
+# Machine-readable index for LLMs: https://useokf.com/llms.txt
+
+User-agent: *
+Allow: /
+
+Sitemap: https://useokf.com/sitemap.xml
+`;
+
+const SITEMAP_XML = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://useokf.com/</loc>
+    <lastmod>2026-07-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>
+`;
+
+// llms.txt (llmstxt.org): a concise, machine-readable map of the project for LLMs.
+const LLMS_TXT = [
+  "# okf",
+  "",
+  "> okf is a Go CLI toolkit for the Open Knowledge Format (OKF): agentic-first, JSON-native, and vendor-neutral. It is a single-binary alternative to Google's Python, Gemini, and BigQuery reference implementation, designed to be discovered and driven by any AI agent through a machine-readable schema.",
+  "",
+  "okf manages OKF bundles: directories of markdown concept files with YAML frontmatter, cross-linked into a knowledge graph. An agent loads the full CLI surface with one call (`okf schema`), drives commands that emit structured JSON on stdout (diagnostics go to stderr), recovers from typed error envelopes, and branches on exit codes that map one to one to error kinds (0 success, 1 validation, 2 io, 3 internal, 4 usage). JSON is the default, not an opt-in flag. okf is Go stdlib-only, Apache 2.0, and ships as a single binary with no runtime dependencies.",
+  "",
+  "## Documentation",
+  "",
+  "- [README](https://github.com/okfcli/okf/blob/main/README.md): full command reference, flags, install, and usage examples",
+  "- [Website](https://useokf.com): overview, the agentic-first design, and the command set",
+  "- [llms-full.txt](https://useokf.com/llms-full.txt): the complete site content as plain markdown for full ingestion",
+  "",
+  "## Source and install",
+  "",
+  "- [GitHub repository](https://github.com/okfcli/okf): source, issues, and releases (Apache 2.0)",
+  "- [Homebrew tap](https://github.com/okfcli/homebrew-okf): install with `brew install okfcli/okf/okf`",
+  "- Go install: `go install github.com/okfcli/okf/cmd/okf@latest`",
+  "",
+  "## Commands",
+  "",
+  "- [okf schema](https://github.com/okfcli/okf/blob/main/README.md): emit a JSON manifest of every command (name, args, stdout format, exit codes). This is how an agent discovers the CLI.",
+  "- [okf version](https://github.com/okfcli/okf/blob/main/README.md): version info as JSON",
+  "- [okf init](https://github.com/okfcli/okf/blob/main/README.md): scaffold a new OKF bundle (tables, datasets, playbooks)",
+  "- [okf index](https://github.com/okfcli/okf/blob/main/README.md): generate index.md files for progressive disclosure",
+  "- [okf validate](https://github.com/okfcli/okf/blob/main/README.md): validate a bundle against the OKF spec, exit 1 on errors",
+  "- [okf lint](https://github.com/okfcli/okf/blob/main/README.md): warnings-only validation, exit 0",
+  "- [okf list](https://github.com/okfcli/okf/blob/main/README.md): list every concept as JSON",
+  "- [okf search](https://github.com/okfcli/okf/blob/main/README.md): filter concepts by tag, type, or text",
+  "- [okf show](https://github.com/okfcli/okf/blob/main/README.md): return a single concept's full content as JSON",
+  "- [okf graph](https://github.com/okfcli/okf/blob/main/README.md): build the cross-link graph with node, edge, and density stats",
+  "- [okf backlinks](https://github.com/okfcli/okf/blob/main/README.md): reverse-link lookup for a concept",
+  "",
+  "## Optional",
+  "",
+  "- [About the Open Knowledge Format](https://github.com/okfcli/okf/blob/main/README.md): okf is an independent, community-built CLI for the Open Knowledge Format. It is not affiliated with, endorsed by, or sponsored by Google.",
+  "",
+].join("\n");
+
+// llms-full.txt: the full landing-page content as plain markdown for deep ingestion.
+const LLMS_FULL_TXT = [
+  "# okf",
+  "",
+  "> The CLI your AI agent drives to manage your knowledge graph.",
+  "",
+  "okf is a Go CLI toolkit for the Open Knowledge Format (OKF): agentic-first, JSON-native, and vendor-neutral. It is a single-binary alternative to Google's Python, Gemini, and BigQuery reference implementation, designed to be driven by any AI agent on any provider.",
+  "",
+  "- Website: https://useokf.com",
+  "- Source: https://github.com/okfcli/okf (Apache 2.0)",
+  "- Install: `brew install okfcli/okf/okf`",
+  "- Current release: v0.1.0 (cosign-signed, SBOM-included)",
+  "",
+  "## Why okf exists",
+  "",
+  "Google's reference OKF implementation is Python plus Gemini plus BigQuery, vendor-locked to Google's cloud. okf is the vendor-neutral alternative: a single Go binary that works anywhere, speaks JSON natively, and is designed to be driven by any AI agent, not just Gemini.",
+  "",
+  "- The problem: the only reference OKF tooling requires Python, a Gemini API key, and BigQuery. Agents that do not run on Google's stack cannot participate. The format is open, but the tooling is not.",
+  "- The old workaround: parse --help text, guess at flags, screen-scrape stdout. Errors are English sentences you cannot reliably branch on. Every agent integration is bespoke prompt engineering.",
+  "- The okf way: load `okf schema` once, a JSON manifest of every command, its args, output format, and exit codes. Drive the CLI from that spec. Branch on .error.kind. JSON is the default.",
+  "- The result: an agent that can discover, drive, and recover from okf without prompt engineering. The schema is the prompt, the error envelope is the branching logic, the exit code is the retry strategy.",
+  "",
+  "## Commands",
+  "",
+  "okf ships 11 commands in one binary with zero runtime dependencies. Built test-first, Go stdlib-only, Apache 2.0. Every command outputs structured JSON on stdout by default.",
+  "",
+  "Schema and discovery:",
+  "",
+  "- `okf schema`: emits a complete JSON manifest of every command (name, description, flags, args, stdout format, exit codes). One call and an agent knows the full CLI surface.",
+  "- `okf version`: prints version info as JSON so agents can check compatibility.",
+  "",
+  "Create and structure:",
+  "",
+  "- `okf init`: scaffolds a new empty OKF bundle with standard subdirectories (tables, datasets, playbooks), a root index.md, and a .gitignore.",
+  "- `okf index`: generates index.md files into every directory for progressive disclosure per OKF spec section 6.",
+  "",
+  "Validate and quality:",
+  "",
+  "- `okf validate`: checks every concept for required frontmatter (type), recommended fields (title, description, tags), non-empty body, and valid cross-links. Exits 1 if any errors are found.",
+  "- `okf lint`: same checks as validate but only emits warnings. Exits 0 even with warnings.",
+  "",
+  "Explore and query:",
+  "",
+  "- `okf list`: lists every concept document with its ID, type, and title as JSON.",
+  "- `okf search`: filters concepts by tag, type, or text.",
+  "- `okf show`: returns a single concept's full content (ID, file path, frontmatter, and markdown body) as JSON.",
+  "",
+  "Graph and relationships:",
+  "",
+  "- `okf graph`: builds the directed cross-link graph and prints nodes, edges, density, and summary statistics.",
+  "- `okf backlinks`: lists every concept that links to a given concept, a reverse-link lookup.",
+  "",
+  "## Agentic-first principle",
+  "",
+  "Agentic-first means an external AI can discover and drive the CLI via `okf schema`, not that the CLI calls an LLM internally. Everything an agent needs is built into the binary.",
+  "",
+  "1. Discover: load the schema manifest with `okf schema`.",
+  "2. Drive: JSON on stdout, diagnostics on stderr.",
+  "3. Recover: typed error envelopes with fields like .error.kind, .error.code, .error.reason, and .error.message, not English sentences.",
+  "4. Branch: exit codes map one to one to error kinds.",
+  "",
+  "Exit codes:",
+  "",
+  "- 0 success: parse stdout JSON, continue.",
+  "- 1 validation: parse findings, fix the bundle, re-run.",
+  "- 2 io: check filesystem and paths, surface to caller.",
+  "- 3 internal: escalate to user, unexpected error.",
+  "- 4 usage: fix flags and args from schema, retry.",
+  "",
+  "## Install",
+  "",
+  "- Homebrew (macOS and Linux): `brew install okfcli/okf/okf`",
+  "- Go install: `go install github.com/okfcli/okf/cmd/okf@latest`",
+  "- Build from source: `git clone https://github.com/okfcli/okf.git` then `cd okf && make build`",
+  "",
+  "Typical workflow:",
+  "",
+  "```",
+  "okf init ./my-bundle",
+  "okf validate ./my-bundle",
+  "okf index ./my-bundle",
+  "okf graph ./my-bundle",
+  "okf search ./my-bundle --type Table --tag revenue",
+  "```",
+  "",
+  "## About",
+  "",
+  "okf is an independent, community-built CLI for the Open Knowledge Format. It is not affiliated with, endorsed by, or sponsored by Google. OKF is an open format from the Google knowledge-catalog repository, used here under its Apache 2.0 license. Built by Akeem Jenkins (https://akeemjenkins.com).",
+  "",
+].join("\n");
 
 const HTML = `<!DOCTYPE html>
 <html lang="en">
@@ -38,6 +204,29 @@ const HTML = `<!DOCTYPE html>
 <script defer data-website-id="${DATAFAST_WEBSITE_ID}" data-domain="useokf.com" src="https://datafa.st/js/script.js"></script>
 <title>okf: the CLI your AI agent drives to manage your knowledge graph</title>
 <meta name="description" content="A Go CLI toolkit for the Open Knowledge Format (OKF): agentic-first, JSON-native, vendor-neutral. An alternative to Google's Python/Gemini-locked reference implementation.">
+<link rel="canonical" href="https://useokf.com/">
+<!-- AI discoverability: machine-readable index for LLMs (llmstxt.org standard) -->
+<link rel="alternate" type="text/markdown" href="/llms.txt" title="llms.txt for AI assistants">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "okf",
+  "alternateName": "Open Knowledge Format CLI",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "macOS, Linux, Windows",
+  "description": "A Go CLI toolkit for the Open Knowledge Format (OKF): agentic-first, JSON-native, and vendor-neutral. Discoverable and drivable by any AI agent via a machine-readable schema.",
+  "url": "https://useokf.com",
+  "codeRepository": "https://github.com/okfcli/okf",
+  "downloadUrl": "https://github.com/okfcli/okf/releases",
+  "softwareVersion": "0.1.0",
+  "programmingLanguage": "Go",
+  "license": "https://www.apache.org/licenses/LICENSE-2.0",
+  "isAccessibleForFree": true,
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "author": { "@type": "Person", "name": "Akeem Jenkins", "url": "https://akeemjenkins.com" }
+}
+</script>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🕸️</text></svg>">
 <style>
 :root {
