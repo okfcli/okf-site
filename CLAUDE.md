@@ -1,4 +1,4 @@
-# CLAUDE.md — okf-site
+# CLAUDE.md: okf-site
 
 Landing page for **okf** (the Open Knowledge Format CLI). It is a single Cloudflare
 Worker that serves one inline HTML page. Deployed to the custom domain **useokf.com**.
@@ -6,11 +6,11 @@ No framework, no build step. The only client-side JavaScript is the DataFast sni
 
 ## Layout
 
-- `src/index.js` — the entire site. A `handler` serves `/robots.txt` and the `HTML`
+- `src/index.js`: the entire site. A `handler` serves `/robots.txt` and the `HTML`
   template-literal page; the handler is wrapped for bot tracking and exported as the
   Worker `fetch`.
-- `wrangler.toml` — Worker config. `routes` binds the `useokf.com` custom domain.
-- `package.json` — deps: `@datafast/ai-crawl` (bot tracking); devDeps: `wrangler`.
+- `wrangler.toml`: Worker config. `routes` binds the `useokf.com` custom domain.
+- `package.json`: deps: `@datafast/ai-crawl` (bot tracking); devDeps: `wrangler`.
   Scripts: `dev`, `deploy`.
 
 ## Deploy
@@ -43,9 +43,9 @@ Tracked with a `data-fast-goal="<name>"` attribute on the clickable element. Dat
 registers goals automatically the first time one fires, so there is nothing to create
 in the dashboard beforehand. Current goals:
 
-- `github_click` — on every link to `github.com/okfcli/okf` (nav, hero, install,
+- `github_click`: on every link to `github.com/okfcli/okf` (nav, hero, install,
   README/docs, CTA, footer). Measures people heading to the GitHub repo.
-- `visit_personal_site` — on the `akeemjenkins.com` footer link.
+- `visit_personal_site`: on the `akeemjenkins.com` footer link.
 
 To add a goal: put `data-fast-goal="lowercase_name"` on the element, or call
 `window.datafast("name")` in JS. Goal names: lowercase letters, digits, and
@@ -64,6 +64,6 @@ custom goals https://datafa.st/docs/custom-goals
 
 ## Copy style (important)
 
-The owner does **not** use em-dashes (`—`). Never introduce them into any copy here
+The owner does **not** use em-dashes. Never introduce them into any copy here
 (page or README). Use commas, colons, or periods instead. Hyphens in compound words
 (`agentic-first`, `cosign-signed`) are fine.

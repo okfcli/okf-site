@@ -21,10 +21,10 @@ npm run deploy
 
 ## Architecture
 
-- `src/index.js` — single Worker file, inline HTML, robots.txt handler, DataFast bot tracking
-- `wrangler.toml` — Cloudflare Worker config
-- `package.json` — `wrangler` (dev) and `@datafast/ai-crawl` (analytics)
-- `CLAUDE.md` — how DataFast analytics/goals are wired, deploy notes, copy style
+- `src/index.js`: single Worker file, inline HTML, robots.txt handler, DataFast bot tracking
+- `wrangler.toml`: Cloudflare Worker config
+- `package.json`: `wrangler` (dev) and `@datafast/ai-crawl` (analytics)
+- `CLAUDE.md`: how DataFast analytics/goals are wired, deploy notes, copy style
 
 See `CLAUDE.md` for how the DataFast analytics, goals, and bot tracking work.
 
