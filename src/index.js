@@ -1,16 +1,26 @@
+import { withAICrawlerTracking } from '@datafast/ai-crawl';
+
+// DataFast website ID. Public value (also rendered into the tracking <script>
+// below), reused for server-side AI-crawler (bot) tracking.
+const DATAFAST_WEBSITE_ID = 'dfid_kJWuBrZXvlBAN4FnNThxX';
+
+const handler = async (request) => {
+  const url = new URL(request.url);
+  if (url.pathname === '/robots.txt') {
+    return new Response('User-agent: *\nAllow: /\n', { headers: { 'Content-Type': 'text/plain' } });
+  }
+  return new Response(HTML, {
+    headers: {
+      'Content-Type': 'text/html;charset=UTF-8',
+      'Cache-Control': 'public, max-age=3600',
+    },
+  });
+};
+
+// Wrap the handler so AI/bot crawler hits are reported to DataFast server-side
+// (best-effort and non-blocking via ctx.waitUntil).
 export default {
-  async fetch(request) {
-    const url = new URL(request.url);
-    if (url.pathname === '/robots.txt') {
-      return new Response('User-agent: *\nAllow: /\n', { headers: { 'Content-Type': 'text/plain' } });
-    }
-    return new Response(HTML, {
-      headers: {
-        'Content-Type': 'text/html;charset=UTF-8',
-        'Cache-Control': 'public, max-age=3600',
-      },
-    });
-  },
+  fetch: withAICrawlerTracking(handler, { websiteId: DATAFAST_WEBSITE_ID }),
 };
 
 const HTML = `<!DOCTYPE html>
@@ -18,8 +28,16 @@ const HTML = `<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>okf — the CLI your AI agent drives to manage your knowledge graph</title>
-<meta name="description" content="A Go CLI toolkit for the Open Knowledge Format (OKF) — agentic-first, JSON-native, vendor-neutral. An alternative to Google's Python/Gemini-locked reference implementation.">
+<!-- DataFast analytics: queue shim captures goal clicks before script.js loads -->
+<script id="datafast-queue">
+  window.datafast = window.datafast || function() {
+    window.datafast.q = window.datafast.q || [];
+    window.datafast.q.push(arguments);
+  };
+</script>
+<script defer data-website-id="${DATAFAST_WEBSITE_ID}" data-domain="useokf.com" src="https://datafa.st/js/script.js"></script>
+<title>okf: the CLI your AI agent drives to manage your knowledge graph</title>
+<meta name="description" content="A Go CLI toolkit for the Open Knowledge Format (OKF): agentic-first, JSON-native, vendor-neutral. An alternative to Google's Python/Gemini-locked reference implementation.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🕸️</text></svg>">
 <style>
 :root {
@@ -316,19 +334,19 @@ footer .disclaimer { margin-top: 16px; font-size: 0.75rem; max-width: 600px; mar
     <li><a href="#features">Commands</a></li>
     <li><a href="#agentic">Agentic First</a></li>
     <li><a href="#install">Install</a></li>
-    <li><a href="https://github.com/okfcli/okf">GitHub</a></li>
+    <li><a href="https://github.com/okfcli/okf" data-fast-goal="github_click">GitHub</a></li>
   </ul>
   <a class="nav-cta" href="#install">Get Started</a>
 </nav>
 
 <!-- Hero -->
 <div class="hero">
-  <div class="badge fade-up"><span class="dot"></span> v0.1.0 released — brew install okfcli/okf/okf</div>
+  <div class="badge fade-up"><span class="dot"></span> v0.1.0 released, brew install okfcli/okf/okf</div>
   <h1 class="fade-up fade-up-delay-1">The CLI your AI agent <span class="gradient">drives</span> to manage your knowledge graph</h1>
-  <p class="sub fade-up fade-up-delay-2">okf is a Go CLI toolkit for the Open Knowledge Format — agentic-first, JSON-native, vendor-neutral. A single binary alternative to Google's Python/Gemini-locked reference implementation.</p>
+  <p class="sub fade-up fade-up-delay-2">okf is a Go CLI toolkit for the Open Knowledge Format: agentic-first, JSON-native, vendor-neutral. A single binary alternative to Google's Python/Gemini-locked reference implementation.</p>
   <div class="cta-group fade-up fade-up-delay-3">
     <a class="btn btn-primary" href="#install">⚡ Install</a>
-    <a class="btn btn-secondary" href="https://github.com/okfcli/okf" target="_blank">View on GitHub →</a>
+    <a class="btn btn-secondary" href="https://github.com/okfcli/okf" target="_blank" data-fast-goal="github_click">View on GitHub →</a>
   </div>
 
   <div class="terminal fade-up fade-up-delay-3">
@@ -346,7 +364,7 @@ footer .disclaimer { margin-top: 16px; font-size: 0.75rem; max-width: 600px; mar
   <span class="key">"exit_codes"</span>: [<span class="ok">0</span>, <span class="out">1</span>, <span class="out">2</span>, <span class="out">4</span>]
 <span class="out">}</span>
 
-<span class="comment"># Then drives it — JSON on stdout, diagnostics on stderr</span>
+<span class="comment"># Then drives it: JSON on stdout, diagnostics on stderr</span>
 <span class="cmd">$</span> okf validate ./my-bundle
 <span class="out">{</span>
   <span class="key">"bundle"</span>: <span class="str">"./my-bundle"</span>,
@@ -364,7 +382,7 @@ footer .disclaimer { margin-top: 16px; font-size: 0.75rem; max-width: 600px; mar
 <section id="why">
   <div class="section-label">Why okf exists</div>
   <h2 class="section-title">Vendor-neutral OKF tooling for any AI agent on any provider</h2>
-  <p class="section-desc">Google's reference OKF implementation is Python + Gemini + BigQuery — vendor-locked to Google's cloud. <code>okf</code> is the vendor-neutral alternative: a single Go binary that works anywhere, speaks JSON natively, and is designed to be driven by any AI agent — not just Gemini.</p>
+  <p class="section-desc">Google's reference OKF implementation is Python + Gemini + BigQuery, vendor-locked to Google's cloud. <code>okf</code> is the vendor-neutral alternative: a single Go binary that works anywhere, speaks JSON natively, and is designed to be driven by any AI agent, not just Gemini.</p>
 
   <div class="why-grid">
     <div>
@@ -380,7 +398,7 @@ footer .disclaimer { margin-top: 16px; font-size: 0.75rem; max-width: 600px; mar
     <div>
       <div class="why-card">
         <div class="label">THE OKF WAY</div>
-        <div class="desc">Load <code>okf schema</code> once — a JSON manifest of every command, its args, output format, and exit codes. Drive the CLI from that spec. Branch on <code>.error.kind</code>. JSON is the default, not an opt-in flag.</div>
+        <div class="desc">Load <code>okf schema</code> once: a JSON manifest of every command, its args, output format, and exit codes. Drive the CLI from that spec. Branch on <code>.error.kind</code>. JSON is the default, not an opt-in flag.</div>
       </div>
       <div class="why-card">
         <div class="label">THE RESULT</div>
@@ -394,14 +412,14 @@ footer .disclaimer { margin-top: 16px; font-size: 0.75rem; max-width: 600px; mar
 <section id="features">
   <div class="section-label">What's inside</div>
   <h2 class="section-title">11 commands, one binary, zero runtime dependencies</h2>
-  <p class="section-desc">Built test-first (35 tests), Go stdlib-only, Apache 2.0. Every command outputs structured JSON on stdout by default — no <code>--json</code> flag, no screen-scraping.</p>
+  <p class="section-desc">Built test-first (35 tests), Go stdlib-only, Apache 2.0. Every command outputs structured JSON on stdout by default. No <code>--json</code> flag, no screen-scraping.</p>
 
   <div class="feature-group-label">Schema & Discovery</div>
   <div class="features" style="margin-bottom: 48px;">
     <div class="feature">
       <div class="icon">📐</div>
       <h3>okf schema</h3>
-      <p>Emits a complete JSON manifest of every command — name, description, flags, args, stdout format, exit codes. One call and an agent knows the full CLI surface. This is the moat.</p>
+      <p>Emits a complete JSON manifest of every command: name, description, flags, args, stdout format, exit codes. One call and an agent knows the full CLI surface. This is the moat.</p>
     </div>
     <div class="feature">
       <div class="icon">🔢</div>
@@ -420,7 +438,7 @@ footer .disclaimer { margin-top: 16px; font-size: 0.75rem; max-width: 600px; mar
     <div class="feature">
       <div class="icon">📇</div>
       <h3>okf index</h3>
-      <p>Generates <code>index.md</code> files into every directory — progressive disclosure per OKF spec §6. Agents navigate level by level instead of loading the entire bundle.</p>
+      <p>Generates <code>index.md</code> files into every directory for progressive disclosure per OKF spec §6. Agents navigate level by level instead of loading the entire bundle.</p>
     </div>
   </div>
 
@@ -434,7 +452,7 @@ footer .disclaimer { margin-top: 16px; font-size: 0.75rem; max-width: 600px; mar
     <div class="feature">
       <div class="icon">🧹</div>
       <h3>okf lint</h3>
-      <p>Same checks as validate but only emits warnings — errors are suppressed. Exits 0 even with warnings. Use it to flag missing recommended fields without failing a build.</p>
+      <p>Same checks as validate but only emits warnings. Errors are suppressed, so it exits 0 even with warnings. Use it to flag missing recommended fields without failing a build.</p>
     </div>
   </div>
 
@@ -443,17 +461,17 @@ footer .disclaimer { margin-top: 16px; font-size: 0.75rem; max-width: 600px; mar
     <div class="feature">
       <div class="icon">📋</div>
       <h3>okf list</h3>
-      <p>Lists every concept document with its ID, type, and title as JSON. The inventory query — what's in this bundle?</p>
+      <p>Lists every concept document with its ID, type, and title as JSON. The inventory query: what's in this bundle?</p>
     </div>
     <div class="feature">
       <div class="icon">🔍</div>
       <h3>okf search</h3>
-      <p>Filters concepts by <code>--tag</code>, <code>--type</code>, or <code>--text</code>. Find stale concepts, filter by category, or locate everything tagged <code>auth</code> — all as structured JSON.</p>
+      <p>Filters concepts by <code>--tag</code>, <code>--type</code>, or <code>--text</code>. Find stale concepts, filter by category, or locate everything tagged <code>auth</code>, all as structured JSON.</p>
     </div>
     <div class="feature">
       <div class="icon">📄</div>
       <h3>okf show</h3>
-      <p>Returns a single concept's full content — ID, file path, frontmatter (type, title, description, resource, tags), and markdown body — as JSON. The deep-read command.</p>
+      <p>Returns a single concept's full content: ID, file path, frontmatter (type, title, description, resource, tags), and markdown body, all as JSON. The deep-read command.</p>
     </div>
   </div>
 
@@ -467,7 +485,7 @@ footer .disclaimer { margin-top: 16px; font-size: 0.75rem; max-width: 600px; mar
     <div class="feature">
       <div class="icon">🔗</div>
       <h3>okf backlinks</h3>
-      <p>Lists every concept that links to a given concept — reverse-link lookup. Answer "who depends on this?" without grepping the entire bundle.</p>
+      <p>Lists every concept that links to a given concept: reverse-link lookup. Answer "who depends on this?" without grepping the entire bundle.</p>
     </div>
   </div>
 </section>
@@ -476,7 +494,7 @@ footer .disclaimer { margin-top: 16px; font-size: 0.75rem; max-width: 600px; mar
 <section id="agentic">
   <div class="section-label">The agentic-first principle</div>
   <h2 class="section-title">Four primitives. Zero ambiguity.</h2>
-  <p class="section-desc">"Agentic first" means an external AI can discover and drive the CLI via <code>okf schema</code> — not that the CLI calls an LLM internally. Everything an agent needs is built into the binary itself.</p>
+  <p class="section-desc">"Agentic first" means an external AI can discover and drive the CLI via <code>okf schema</code>, not that the CLI calls an LLM internally. Everything an agent needs is built into the binary itself.</p>
 
   <div class="code-block">
 <span class="comment">// 1. Discover: load the schema manifest</span>
@@ -525,7 +543,7 @@ footer .disclaimer { margin-top: 16px; font-size: 0.75rem; max-width: 600px; mar
       <tr><td>0</td><td>success</td><td>Parse stdout JSON, continue</td></tr>
       <tr><td>1</td><td>validation</td><td>Parse findings, fix the bundle, re-run</td></tr>
       <tr><td>2</td><td>io</td><td>Check filesystem / paths, surface to caller</td></tr>
-      <tr><td>3</td><td>internal</td><td>Escalate to user — unexpected error</td></tr>
+      <tr><td>3</td><td>internal</td><td>Escalate to user, unexpected error</td></tr>
       <tr><td>4</td><td>usage</td><td>Fix flags/args from schema, retry</td></tr>
     </tbody>
   </table>
@@ -535,7 +553,7 @@ footer .disclaimer { margin-top: 16px; font-size: 0.75rem; max-width: 600px; mar
 <section id="install">
   <div class="section-label">Get started</div>
   <h2 class="section-title">Install in 30 seconds</h2>
-  <p class="section-desc">v0.1.0 released — cosign-signed, SBOM-included. One binary, no runtime dependencies.</p>
+  <p class="section-desc">v0.1.0 released, cosign-signed, SBOM-included. One binary, no runtime dependencies.</p>
 
   <div class="install-grid">
     <div class="install-card">
@@ -579,8 +597,8 @@ cd okf && make build
   </div>
 
   <div style="text-align: center; margin-top: 48px;">
-    <a class="btn btn-primary" href="https://github.com/okfcli/okf" target="_blank">⬇ View on GitHub</a>
-    <a class="btn btn-secondary" href="https://github.com/okfcli/okf/blob/main/README.md" target="_blank" style="margin-left: 12px;">Read the docs →</a>
+    <a class="btn btn-primary" href="https://github.com/okfcli/okf" target="_blank" data-fast-goal="github_click">⬇ View on GitHub</a>
+    <a class="btn btn-secondary" href="https://github.com/okfcli/okf/blob/main/README.md" target="_blank" style="margin-left: 12px;" data-fast-goal="github_click">Read the docs →</a>
   </div>
 </section>
 
@@ -590,22 +608,22 @@ cd okf && make build
   <p>Schema-discoverable. JSON-native. Vendor-neutral. One Go binary.</p>
   <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
     <a class="btn btn-primary" href="#install">Install okf</a>
-    <a class="btn btn-secondary" href="https://github.com/okfcli/okf" target="_blank">Star on GitHub</a>
+    <a class="btn btn-secondary" href="https://github.com/okfcli/okf" target="_blank" data-fast-goal="github_click">Star on GitHub</a>
   </div>
 </div>
 
 <!-- Footer -->
 <footer>
   <div>
-    <strong style="color: var(--accent-deep);">okf</strong> — Go CLI toolkit for the Open Knowledge Format ·
-    <a href="https://github.com/okfcli/okf">GitHub</a> ·
-    <a href="https://github.com/okfcli/okf/blob/main/README.md">README</a> ·
+    <strong style="color: var(--accent-deep);">okf</strong>, Go CLI toolkit for the Open Knowledge Format ·
+    <a href="https://github.com/okfcli/okf" data-fast-goal="github_click">GitHub</a> ·
+    <a href="https://github.com/okfcli/okf/blob/main/README.md" data-fast-goal="github_click">README</a> ·
     Apache 2.0 License
   </div>
   <div class="disclaimer">
     okf is an independent, community-built CLI for the Open Knowledge Format. It is not affiliated with, endorsed by, or sponsored by Google. OKF is an open format from the Google knowledge-catalog repository, used here under its Apache 2.0 license.
   </div>
-  <div style="margin-top: 12px;">Built by <a href="https://akeemjenkins.com">Akeem Jenkins</a></div>
+  <div style="margin-top: 12px;">Built by <a href="https://akeemjenkins.com" data-fast-goal="visit_personal_site">Akeem Jenkins</a></div>
 </footer>
 
 </body>
