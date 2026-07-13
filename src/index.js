@@ -415,6 +415,7 @@ header.nav {
 .terminal-body {
   padding: 20px; font-family: var(--mono); font-size: 0.82rem;
   overflow-x: auto; line-height: 1.7; color: var(--term-text);
+  white-space: pre;
 }
 .terminal-body .cmd { color: var(--accent-2); }
 .terminal-body .out { color: #a5b4d8; }
@@ -477,7 +478,7 @@ section code {
   border-radius: var(--radius); padding: 24px;
   font-family: var(--mono); font-size: 0.82rem;
   overflow-x: auto; line-height: 1.7; color: var(--term-text);
-  text-align: left;
+  text-align: left; white-space: pre;
 }
 .code-block .cmd { color: var(--accent-2); }
 .code-block .key { color: #818cf8; }
@@ -594,8 +595,7 @@ footer .disclaimer { margin-top: 16px; font-size: 0.75rem; max-width: 600px; mar
       <div class="dot-r"></div><div class="dot-y"></div><div class="dot-g"></div>
       <div class="title">okf schema validate</div>
     </div>
-    <div class="terminal-body">
-<span class="comment"># The agent discovers the tool first</span>
+    <div class="terminal-body"><span class="comment"># The agent discovers the tool first</span>
 <span class="cmd">$</span> okf schema validate
 <span class="out">{</span>
   <span class="key">"name"</span>: <span class="str">"validate"</span>,
@@ -613,8 +613,7 @@ footer .disclaimer { margin-top: 16px; font-size: 0.75rem; max-width: 600px; mar
   <span class="key">"errors"</span>: <span class="ok">0</span>,
   <span class="key">"warnings"</span>: <span class="ok">0</span>,
   <span class="key">"findings"</span>: []
-<span class="out">}</span>
-    </div>
+<span class="out">}</span></div>
   </div>
 </div>
 
@@ -736,8 +735,7 @@ footer .disclaimer { margin-top: 16px; font-size: 0.75rem; max-width: 600px; mar
   <h2 class="section-title">Four primitives. Zero ambiguity.</h2>
   <p class="section-desc">"Agentic first" means an external AI can discover and drive the CLI via <code>okf schema</code>, not that the CLI calls an LLM internally. Everything an agent needs is built into the binary itself.</p>
 
-  <div class="code-block">
-<span class="comment">// 1. Discover: load the schema manifest</span>
+  <div class="code-block"><span class="comment">// 1. Discover: load the schema manifest</span>
 <span class="cmd">$</span> okf schema
 <span class="out">{</span>
   <span class="key">"name"</span>: <span class="str">"okf"</span>,
@@ -774,8 +772,7 @@ footer .disclaimer { margin-top: 16px; font-size: 0.75rem; max-width: 600px; mar
 <span class="out">}</span>
 <span class="comment">// exit code: 1 -> agent parses findings, fixes, re-validates</span>
 
-<span class="comment">// 4. Branch: exit codes map 1:1 to error kinds</span>
-  </div>
+<span class="comment">// 4. Branch: exit codes map 1:1 to error kinds</span></div>
 
   <table class="exit-table">
     <thead><tr><th>Code</th><th>Kind</th><th>Agent Strategy</th></tr></thead>
@@ -814,8 +811,7 @@ cd okf && make build
 
   <div style="margin-top: 40px;">
     <p style="color: var(--ink-soft); margin-bottom: 16px;">Then scaffold a bundle, add concepts, and validate:</p>
-    <div class="code-block">
-<span class="comment"># Create a new bundle</span>
+    <div class="code-block"><span class="comment"># Create a new bundle</span>
 <span class="cmd">$</span> okf init ./my-bundle
 <span class="out">{"command":"init","bundle":"./my-bundle","created":true}</span>
 
@@ -832,8 +828,7 @@ cd okf && make build
 <span class="cmd">$</span> okf graph ./my-bundle
 
 <span class="comment"># Search by tag, type, or text</span>
-<span class="cmd">$</span> okf search ./my-bundle --type Table --tag revenue
-    </div>
+<span class="cmd">$</span> okf search ./my-bundle --type Table --tag revenue</div>
   </div>
 
   <div style="text-align: center; margin-top: 48px;">
