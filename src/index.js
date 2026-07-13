@@ -293,7 +293,7 @@ const HTML = `<!DOCTYPE html>
     --accent-soft: #232145;
     --accent-hover: #a89aff;
   }
-  .btn-primary, nav .nav-cta { color: #14120f; }
+  .btn-primary, .nav-links .nav-cta, .nav-links .nav-cta:hover { color: #14120f; }
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; }
@@ -311,34 +311,31 @@ a:hover { text-decoration: underline; }
 .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
 
 /* Nav */
-nav {
-  position: fixed; top: 0; width: 100%; z-index: 100;
-  background: color-mix(in srgb, var(--paper) 88%, transparent);
+header.nav {
+  position: sticky; top: 0; z-index: 50;
+  background: color-mix(in srgb, var(--paper) 80%, transparent);
   backdrop-filter: saturate(1.4) blur(14px);
   -webkit-backdrop-filter: saturate(1.4) blur(14px);
   border-bottom: 1px solid var(--line);
-  padding: 0 24px;
-  display: flex; align-items: center; justify-content: space-between;
-  height: 60px;
 }
-nav .logo { font-weight: 700; font-size: 1.2rem; letter-spacing: -0.02em; color: var(--ink); }
-nav .logo span { color: var(--accent); }
-nav ul { display: flex; gap: 28px; list-style: none; }
-nav ul a { color: var(--ink-soft); font-size: 0.9rem; font-weight: 500; transition: color .2s; }
-nav ul a:hover { color: var(--accent); text-decoration: none; }
-nav .nav-cta {
-  background: var(--accent); color: #fff; padding: 8px 18px;
-  border-radius: 999px; font-size: 0.85rem; font-weight: 600;
-  transition: transform .15s, box-shadow .15s;
-  box-shadow: 0 2px 12px color-mix(in srgb, var(--accent) 25%, transparent);
+.nav-inner { display: flex; align-items: center; justify-content: space-between; height: 62px; }
+.brand { display: flex; align-items: center; font-weight: 700; font-size: 18px; letter-spacing: -0.02em; color: var(--ink); }
+.brand:hover { text-decoration: none; }
+.brand .dot { color: var(--accent); }
+.nav-links { display: flex; align-items: center; gap: 26px; }
+.nav-links a { color: var(--ink-soft); font-size: 14.5px; font-weight: 500; transition: color .15s; }
+.nav-links a:hover { color: var(--ink); text-decoration: none; }
+.nav-links .nav-cta {
+  background: var(--accent); color: #fff; padding: 8px 16px;
+  border-radius: 999px; font-size: 14px; font-weight: 700; transition: background .15s;
 }
-nav .nav-cta:hover { text-decoration: none; transform: translateY(-1px); box-shadow: 0 4px 20px color-mix(in srgb, var(--accent) 35%, transparent); }
+.nav-links .nav-cta:hover { background: var(--accent-deep); color: #fff; text-decoration: none; }
 
 /* Hero */
 .hero {
-  min-height: 100vh; display: flex; flex-direction: column;
+  min-height: calc(100vh - 62px); display: flex; flex-direction: column;
   align-items: center; justify-content: center;
-  text-align: center; padding: 120px 24px 60px;
+  text-align: center; padding: 60px 24px 60px;
   position: relative;
   background: linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
 }
@@ -550,10 +547,9 @@ footer .disclaimer { margin-top: 16px; font-size: 0.75rem; max-width: 600px; mar
 .footer-inner .siblings .current { color: var(--muted); }
 
 /* Responsive */
-@media (max-width: 640px) {
-  nav ul { display: none; }
-  nav { justify-content: space-between; }
-  .hero { padding-top: 100px; }
+@media (max-width: 760px) {
+  .nav-links .hide-sm { display: none; }
+  .hero { padding-top: 48px; }
 }
 
 /* Animations */
@@ -569,17 +565,19 @@ footer .disclaimer { margin-top: 16px; font-size: 0.75rem; max-width: 600px; mar
 </head>
 <body>
 
-<nav>
-  <div class="logo">okf<span>.</span></div>
-  <ul>
-    <li><a href="#why">Why</a></li>
-    <li><a href="#features">Commands</a></li>
-    <li><a href="#agentic">Agentic First</a></li>
-    <li><a href="#install">Install</a></li>
-    <li><a href="https://github.com/okfcli/okf" data-fast-goal="github_click">GitHub</a></li>
-  </ul>
-  <a class="nav-cta" href="#install">Get Started</a>
-</nav>
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="/">okf<span class="dot">.</span></a>
+    <nav class="nav-links">
+      <a class="hide-sm" href="#why">Why</a>
+      <a class="hide-sm" href="#features">Commands</a>
+      <a class="hide-sm" href="#agentic">Agentic First</a>
+      <a class="hide-sm" href="#install">Install</a>
+      <a class="hide-sm" href="https://github.com/okfcli/okf" data-fast-goal="github_click">GitHub</a>
+      <a class="nav-cta" href="#install">Get Started</a>
+    </nav>
+  </div>
+</header>
 
 <!-- Hero -->
 <div class="hero">
