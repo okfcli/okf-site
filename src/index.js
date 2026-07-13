@@ -194,6 +194,11 @@ const HTML = `<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f7f5f1">
+<meta name="theme-color" content="#14120f" media="(prefers-color-scheme: dark)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Newsreader:ital,opsz,wght@1,6..72,400;1,6..72,500&display=swap" rel="stylesheet">
 <!-- DataFast analytics: queue shim captures goal clicks before script.js loads -->
 <script id="datafast-queue">
   window.datafast = window.datafast || function() {
@@ -230,66 +235,104 @@ const HTML = `<!DOCTYPE html>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🕸️</text></svg>">
 <style>
 :root {
-  --bg: #ffffff;
-  --bg2: #f5f6fb;
-  --surface: #f0f1f8;
-  --surface2: #e8eaf5;
-  --border: #e0e3ee;
-  --border2: #ccd1e6;
-  --text: #1a1a3e;
-  --text-dim: #5b6275;
-  --text-faint: #9ca3b8;
+  /* neutrals — warm paper, light default */
+  --paper: #f7f5f1;
+  --paper-2: #efece5;
+  --card: #ffffff;
+  --line: #e4e0d7;
+  --line-2: #d5d0c3;
+  --ink: #1f1d1a;
+  --ink-soft: #4a463f;
+  --muted: #6b6557;
+
+  /* terminal panels — always dark in both modes */
+  --term-bg: #16130f;
+  --term-text: #ece9e2;
+
+  /* layout */
+  --radius: 14px;
+  --radius-lg: 20px;
+  --maxw: 1080px;
+
+  /* okf indigo accent */
   --accent: #4338ca;
   --accent-deep: #312e81;
+  --accent-2: #6366f1;
+  --accent-soft: #e8e9fb;
   --accent-hover: #3730c9;
-  --complement: #d97706;
-  --complement-deep: #b45309;
-  --complement-soft: #fef3c7;
+
+  /* status colors (unchanged) */
   --warn: #f59e0b;
   --error: #ef4444;
   --success: #059669;
-  --mono: 'SF Mono', 'Fira Code', 'JetBrains Mono', 'Cascadia Code', monospace;
-  --sans: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Helvetica, Arial, sans-serif;
-  --shadow: 0 4px 24px rgba(67,56,202,0.08);
-  --shadow-lg: 0 12px 48px rgba(67,56,202,0.14);
-  --shadow-sm: 0 2px 8px rgba(26,26,62,0.06);
+
+  /* fonts */
+  --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --serif: "Newsreader", Georgia, serif;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+  /* shadows, indigo-tinted */
+  --shadow: 0 4px 24px color-mix(in srgb, var(--accent) 8%, transparent);
+  --shadow-lg: 0 12px 48px color-mix(in srgb, var(--accent) 14%, transparent);
+  --shadow-sm: 0 2px 8px color-mix(in srgb, var(--accent) 6%, transparent);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #14120f;
+    --paper-2: #1a1713;
+    --card: #201c17;
+    --line: #2e2922;
+    --line-2: #3c362c;
+    --ink: #ece9e2;
+    --ink-soft: #c6c0b4;
+    --muted: #948c7c;
+
+    --accent: #8b85f0;
+    --accent-deep: #6f68e8;
+    --accent-2: #aca7f6;
+    --accent-soft: #232145;
+    --accent-hover: #a89aff;
+  }
+  .btn-primary, nav .nav-cta { color: #14120f; }
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body {
-  background: var(--bg);
-  color: var(--text);
+  background: var(--paper);
+  color: var(--ink);
   font-family: var(--sans);
+  font-size: 16px;
   line-height: 1.6;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
 a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
+.wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
 
 /* Nav */
 nav {
   position: fixed; top: 0; width: 100%; z-index: 100;
-  background: rgba(255,255,255,0.88);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  backdrop-filter: saturate(1.4) blur(14px);
+  -webkit-backdrop-filter: saturate(1.4) blur(14px);
+  border-bottom: 1px solid var(--line);
   padding: 0 24px;
   display: flex; align-items: center; justify-content: space-between;
   height: 60px;
 }
-nav .logo { font-weight: 700; font-size: 1.2rem; letter-spacing: -0.02em; color: var(--accent-deep); }
-nav .logo span { color: var(--complement); }
+nav .logo { font-weight: 700; font-size: 1.2rem; letter-spacing: -0.02em; color: var(--ink); }
+nav .logo span { color: var(--accent); }
 nav ul { display: flex; gap: 28px; list-style: none; }
-nav ul a { color: var(--text-dim); font-size: 0.9rem; font-weight: 500; transition: color .2s; }
-nav ul a:hover { color: var(--accent-deep); text-decoration: none; }
+nav ul a { color: var(--ink-soft); font-size: 0.9rem; font-weight: 500; transition: color .2s; }
+nav ul a:hover { color: var(--accent); text-decoration: none; }
 nav .nav-cta {
   background: var(--accent); color: #fff; padding: 8px 18px;
-  border-radius: 8px; font-size: 0.85rem; font-weight: 600;
+  border-radius: 999px; font-size: 0.85rem; font-weight: 600;
   transition: transform .15s, box-shadow .15s;
-  box-shadow: 0 2px 12px rgba(67,56,202,0.25);
+  box-shadow: 0 2px 12px color-mix(in srgb, var(--accent) 25%, transparent);
 }
-nav .nav-cta:hover { text-decoration: none; transform: translateY(-1px); box-shadow: 0 4px 20px rgba(67,56,202,0.35); }
+nav .nav-cta:hover { text-decoration: none; transform: translateY(-1px); box-shadow: 0 4px 20px color-mix(in srgb, var(--accent) 35%, transparent); }
 
 /* Hero */
 .hero {
@@ -297,44 +340,47 @@ nav .nav-cta:hover { text-decoration: none; transform: translateY(-1px); box-sha
   align-items: center; justify-content: center;
   text-align: center; padding: 120px 24px 60px;
   position: relative;
-  background: linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+  background: linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
 }
 .hero::before {
   content: ''; position: absolute; top: 0; left: 50%;
   transform: translateX(-50%);
   width: 900px; height: 500px;
-  background: radial-gradient(ellipse at center, rgba(67,56,202,0.08), transparent 70%);
+  background: radial-gradient(ellipse at center, color-mix(in srgb, var(--accent) 8%, transparent), transparent 70%);
   pointer-events: none;
 }
 .hero .badge {
   display: inline-flex; align-items: center; gap: 8px;
-  background: var(--surface); border: 1px solid var(--border2);
+  background: var(--card); border: 1px solid var(--line-2);
   padding: 6px 16px; border-radius: 100px;
-  font-size: 0.8rem; color: var(--text-dim);
+  font-size: 0.8rem; color: var(--ink-soft);
   margin-bottom: 32px; position: relative;
   box-shadow: var(--shadow-sm);
 }
 .hero .badge .dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; }
 .hero h1 {
-  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-size: clamp(38px, 6vw, 62px);
   font-weight: 800; letter-spacing: -0.03em;
   line-height: 1.05; max-width: 850px;
   margin-bottom: 24px; position: relative;
-  color: var(--text);
+  color: var(--ink);
 }
-.hero h1 .gradient {
-  background: linear-gradient(135deg, var(--accent), var(--complement));
+.hero em, .cta-section em {
+  font-family: var(--serif); font-style: italic; font-weight: 500;
+}
+.hero h1 .gradient, .cta-section h2 .gradient {
+  background: linear-gradient(100deg, var(--accent), var(--accent-2));
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 .hero p.sub {
-  font-size: 1.25rem; color: var(--text-dim);
+  font-size: 1.25rem; color: var(--ink-soft);
   max-width: 620px; margin-bottom: 40px; position: relative;
 }
 .hero .cta-group { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; position: relative; }
 .btn {
   display: inline-flex; align-items: center; gap: 10px;
-  padding: 14px 28px; border-radius: 12px;
+  padding: 14px 28px; border-radius: 999px;
   font-weight: 600; font-size: 1rem;
   transition: transform .15s, box-shadow .15s, background .2s, border-color .2s;
   cursor: pointer; border: none;
@@ -342,29 +388,28 @@ nav .nav-cta:hover { text-decoration: none; transform: translateY(-1px); box-sha
 }
 .btn-primary {
   background: var(--accent); color: #fff;
-  box-shadow: 0 4px 20px rgba(67,56,202,0.3);
+  box-shadow: 0 4px 20px color-mix(in srgb, var(--accent) 30%, transparent);
 }
-.btn-primary:hover { text-decoration: none; transform: translateY(-2px); box-shadow: 0 8px 30px rgba(67,56,202,0.4); }
+.btn-primary:hover { text-decoration: none; transform: translateY(-2px); box-shadow: 0 8px 30px color-mix(in srgb, var(--accent) 40%, transparent); }
 .btn-secondary {
-  background: var(--surface); color: var(--text);
-  border: 1px solid var(--border2);
-  box-shadow: var(--shadow-sm);
+  background: transparent; color: var(--ink);
+  border: 1px solid var(--line-2);
 }
 .btn-secondary:hover { text-decoration: none; transform: translateY(-2px); border-color: var(--accent); box-shadow: var(--shadow); }
 
 /* Terminal preview */
 .terminal {
   margin-top: 60px; max-width: 720px; width: 100%;
-  background: #1a1a2e; border: 1px solid #2a2a3e;
-  border-radius: 12px; overflow: hidden;
+  background: var(--term-bg); border: 1px solid #2a251e;
+  border-radius: var(--radius); overflow: hidden;
   box-shadow: var(--shadow-lg);
   position: relative;
   text-align: left;
 }
 .terminal-bar {
   display: flex; align-items: center; gap: 8px;
-  padding: 12px 16px; background: #12121a;
-  border-bottom: 1px solid #2a2a3e;
+  padding: 12px 16px; background: #100d0a;
+  border-bottom: 1px solid #2a251e;
 }
 .terminal-bar .dot-r { width: 12px; height: 12px; border-radius: 50%; background: #ff5f57; }
 .terminal-bar .dot-y { width: 12px; height: 12px; border-radius: 50%; background: #febc2e; }
@@ -372,9 +417,9 @@ nav .nav-cta:hover { text-decoration: none; transform: translateY(-1px); box-sha
 .terminal-bar .title { margin-left: 12px; font-size: 0.8rem; color: #8888aa; font-family: var(--mono); }
 .terminal-body {
   padding: 20px; font-family: var(--mono); font-size: 0.82rem;
-  overflow-x: auto; line-height: 1.7; color: #e4e4ef;
+  overflow-x: auto; line-height: 1.7; color: var(--term-text);
 }
-.terminal-body .cmd { color: #fbbf24; }
+.terminal-body .cmd { color: var(--accent-2); }
 .terminal-body .out { color: #a5b4d8; }
 .terminal-body .key { color: #818cf8; }
 .terminal-body .str { color: #f59e0b; }
@@ -382,62 +427,62 @@ nav .nav-cta:hover { text-decoration: none; transform: translateY(-1px); box-sha
 .terminal-body .ok { color: #34d399; }
 
 /* Sections */
-section { padding: 100px 24px; max-width: 1100px; margin: 0 auto; }
+section { padding: 100px 24px; max-width: var(--maxw); margin: 0 auto; }
 .section-label {
-  font-size: 0.8rem; font-weight: 600; text-transform: uppercase;
-  letter-spacing: 0.1em; color: var(--complement-deep); margin-bottom: 12px;
+  font-family: var(--mono); font-size: 12px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.14em; color: var(--accent); margin-bottom: 12px;
 }
 .section-title {
   font-size: clamp(1.8rem, 4vw, 2.8rem);
   font-weight: 700; letter-spacing: -0.02em;
   margin-bottom: 16px; max-width: 700px;
-  color: var(--text);
+  color: var(--ink);
 }
-.section-desc { font-size: 1.1rem; color: var(--text-dim); max-width: 620px; margin-bottom: 48px; }
+.section-desc { font-size: 1.1rem; color: var(--ink-soft); max-width: 620px; margin-bottom: 48px; }
 section code {
-  font-family: var(--mono); font-size: 0.9em; background: var(--surface2);
+  font-family: var(--mono); font-size: 0.9em; background: var(--paper-2);
   padding: 2px 6px; border-radius: 4px; color: var(--accent-deep);
 }
 
 /* Feature grid */
 .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
 .feature {
-  background: var(--bg); border: 1px solid var(--border);
-  border-radius: 16px; padding: 32px;
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: var(--radius-lg); padding: 32px;
   transition: border-color .2s, transform .2s, box-shadow .2s;
   box-shadow: var(--shadow-sm);
 }
 .feature:hover { border-color: var(--accent); transform: translateY(-4px); box-shadow: var(--shadow); }
 .feature .icon { font-size: 1.8rem; margin-bottom: 16px; }
-.feature h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 8px; color: var(--text); }
-.feature p { color: var(--text-dim); font-size: 0.95rem; }
+.feature h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 8px; color: var(--ink); }
+.feature p { color: var(--ink-soft); font-size: 0.95rem; }
 .feature p code { font-size: 0.85em; }
 .feature-group-label {
-  font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
-  letter-spacing: 0.08em; color: var(--accent); margin-bottom: 20px;
-  padding-bottom: 8px; border-bottom: 2px solid var(--surface2);
+  font-family: var(--mono); font-size: 12px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.14em; color: var(--accent); margin-bottom: 20px;
+  padding-bottom: 8px; border-bottom: 2px solid var(--line-2);
 }
 
 /* Why section */
 .why-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
 @media (max-width: 768px) { .why-grid { grid-template-columns: 1fr; } }
 .why-card {
-  background: var(--surface); border: 1px solid var(--border2);
-  border-radius: 12px; padding: 24px; margin-bottom: 16px;
+  background: var(--card); border: 1px solid var(--line-2);
+  border-radius: var(--radius); padding: 24px; margin-bottom: 16px;
 }
-.why-card .label { font-family: var(--mono); font-size: 0.8rem; color: var(--complement-deep); margin-bottom: 8px; font-weight: 600; letter-spacing: 0.05em; }
-.why-card .desc { font-size: 0.95rem; color: var(--text-dim); }
+.why-card .label { font-family: var(--mono); font-size: 12px; color: var(--accent); margin-bottom: 8px; font-weight: 600; letter-spacing: 0.14em; }
+.why-card .desc { font-size: 0.95rem; color: var(--ink-soft); }
 .why-card .desc code { font-size: 0.9em; }
 
 /* Code block */
 .code-block {
-  background: #1a1a2e; border: 1px solid #2a2a3e;
-  border-radius: 12px; padding: 24px;
+  background: var(--term-bg); border: 1px solid #2a251e;
+  border-radius: var(--radius); padding: 24px;
   font-family: var(--mono); font-size: 0.82rem;
-  overflow-x: auto; line-height: 1.7; color: #e4e4ef;
+  overflow-x: auto; line-height: 1.7; color: var(--term-text);
   text-align: left;
 }
-.code-block .cmd { color: #fbbf24; }
+.code-block .cmd { color: var(--accent-2); }
 .code-block .key { color: #818cf8; }
 .code-block .str { color: #f59e0b; }
 .code-block .comment { color: #555566; }
@@ -445,56 +490,64 @@ section code {
 .code-block .ok { color: #34d399; }
 
 /* Exit codes table */
-.exit-table { width: 100%; border-collapse: collapse; margin-top: 24px; font-size: 0.9rem; background: var(--bg); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow-sm); }
-.exit-table th, .exit-table td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--border); }
-.exit-table th { color: var(--text-dim); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; background: var(--surface); }
-.exit-table td { font-family: var(--mono); color: var(--text); }
+.exit-table { width: 100%; border-collapse: collapse; margin-top: 24px; font-size: 0.9rem; background: var(--card); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-sm); }
+.exit-table th, .exit-table td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+.exit-table th { color: var(--ink-soft); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; background: var(--paper-2); }
+.exit-table td { font-family: var(--mono); color: var(--ink); }
 .exit-table td:first-child { color: var(--accent); font-weight: 700; }
-.exit-table td:nth-child(2) { color: var(--complement-deep); font-weight: 600; }
+.exit-table td:nth-child(2) { color: var(--accent-deep); font-weight: 600; }
 .exit-table tr:last-child td { border-bottom: none; }
-.exit-table tr:hover { background: var(--surface); }
+.exit-table tr:hover { background: var(--paper-2); }
 
 /* Install section */
 .install-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 32px; }
 .install-card {
-  background: var(--surface); border: 1px solid var(--border2);
-  border-radius: 12px; padding: 24px;
+  background: var(--card); border: 1px solid var(--line-2);
+  border-radius: var(--radius); padding: 24px;
 }
-.install-card h4 { font-size: 0.85rem; font-weight: 600; color: var(--complement-deep); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
+.install-card h4 { font-family: var(--mono); font-size: 12px; font-weight: 600; color: var(--accent); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.14em; }
 .install-card code {
   display: block; font-family: var(--mono); font-size: 0.85rem;
-  background: var(--bg); padding: 12px; border-radius: 8px;
-  border: 1px solid var(--border); color: var(--accent-deep);
+  background: var(--paper-2); padding: 12px; border-radius: 8px;
+  border: 1px solid var(--line); color: var(--accent-deep);
   word-break: break-all; white-space: pre-wrap;
 }
 
 /* CTA section */
 .cta-section {
   text-align: center; padding: 120px 24px;
-  background: linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
-  border-top: 1px solid var(--border);
+  background: linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
+  border-top: 1px solid var(--line);
 }
 .cta-section h2 {
   font-size: clamp(2rem, 5vw, 3.5rem);
   font-weight: 800; letter-spacing: -0.02em;
-  margin-bottom: 16px; color: var(--text);
+  margin-bottom: 16px; color: var(--ink);
 }
-.cta-section h2 .gradient {
-  background: linear-gradient(135deg, var(--accent), var(--complement));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-.cta-section p { color: var(--text-dim); font-size: 1.15rem; margin-bottom: 40px; }
+.cta-section p { color: var(--ink-soft); font-size: 1.15rem; margin-bottom: 40px; }
 
 /* Footer */
 footer {
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--line);
   padding: 40px 24px; text-align: center;
-  color: var(--text-dim); font-size: 0.85rem;
-  background: var(--bg);
+  color: var(--muted); font-size: 0.85rem;
+  background: var(--paper);
 }
 footer a { color: var(--accent-deep); }
-footer .disclaimer { margin-top: 16px; font-size: 0.75rem; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.5; color: var(--text-faint); }
+footer .disclaimer { margin-top: 16px; font-size: 0.75rem; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.5; color: var(--muted); }
+.footer-inner {
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--line);
+}
+.footer-inner .byline { font-size: 0.85rem; color: var(--muted); }
+.footer-inner .byline a { color: var(--accent-deep); }
+.footer-inner .siblings {
+  font-family: var(--mono); font-size: 0.8rem; color: var(--muted);
+  display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; align-items: center;
+}
+.footer-inner .siblings a { color: var(--ink-soft); }
+.footer-inner .siblings a:hover { color: var(--accent); }
+.footer-inner .siblings .current { color: var(--muted); }
 
 /* Responsive */
 @media (max-width: 640px) {
@@ -531,7 +584,7 @@ footer .disclaimer { margin-top: 16px; font-size: 0.75rem; max-width: 600px; mar
 <!-- Hero -->
 <div class="hero">
   <div class="badge fade-up"><span class="dot"></span> v0.1.0 released, brew install okfcli/okf/okf</div>
-  <h1 class="fade-up fade-up-delay-1">The CLI your AI agent <span class="gradient">drives</span> to manage your knowledge graph</h1>
+  <h1 class="fade-up fade-up-delay-1">The CLI your AI agent <em class="gradient">drives</em> to manage your knowledge graph</h1>
   <p class="sub fade-up fade-up-delay-2">okf is a Go CLI toolkit for the Open Knowledge Format: agentic-first, JSON-native, vendor-neutral. A single binary alternative to Google's Python/Gemini-locked reference implementation.</p>
   <div class="cta-group fade-up fade-up-delay-3">
     <a class="btn btn-primary" href="#install">⚡ Install</a>
@@ -762,7 +815,7 @@ cd okf && make build
   </div>
 
   <div style="margin-top: 40px;">
-    <p style="color: var(--text-dim); margin-bottom: 16px;">Then scaffold a bundle, add concepts, and validate:</p>
+    <p style="color: var(--ink-soft); margin-bottom: 16px;">Then scaffold a bundle, add concepts, and validate:</p>
     <div class="code-block">
 <span class="comment"># Create a new bundle</span>
 <span class="cmd">$</span> okf init ./my-bundle
@@ -803,16 +856,29 @@ cd okf && make build
 
 <!-- Footer -->
 <footer>
-  <div>
-    <strong style="color: var(--accent-deep);">okf</strong>, Go CLI toolkit for the Open Knowledge Format ·
-    <a href="https://github.com/okfcli/okf" data-fast-goal="github_click">GitHub</a> ·
-    <a href="https://github.com/okfcli/okf/blob/main/README.md" data-fast-goal="github_click">README</a> ·
-    Apache 2.0 License
+  <div class="wrap">
+    <div>
+      <strong style="color: var(--accent-deep);">okf</strong>, Go CLI toolkit for the Open Knowledge Format ·
+      <a href="https://github.com/okfcli/okf" data-fast-goal="github_click">GitHub</a> ·
+      <a href="https://github.com/okfcli/okf/blob/main/README.md" data-fast-goal="github_click">README</a> ·
+      Apache 2.0 License
+    </div>
+    <div class="disclaimer">
+      okf is an independent, community-built CLI for the Open Knowledge Format. It is not affiliated with, endorsed by, or sponsored by Google. OKF is an open format from the Google knowledge-catalog repository, used here under its Apache 2.0 license.
+    </div>
+    <div style="margin-top: 12px;">Built by <a href="https://akeemjenkins.com" data-fast-goal="visit_personal_site">Akeem Jenkins</a></div>
+
+    <div class="footer-inner">
+      <p class="byline">An <a href="https://akeemjenkins.com">Akeem Jenkins</a> project</p>
+      <nav class="siblings" aria-label="More tools by Akeem">
+        <span>More tools:</span>
+        <a href="https://higgscli.com">higgs</a>
+        <a href="https://ouracli.com">oura</a>
+        <span class="current" aria-current="page">okf</span>
+        <a href="https://useengram.ai">engram</a>
+      </nav>
+    </div>
   </div>
-  <div class="disclaimer">
-    okf is an independent, community-built CLI for the Open Knowledge Format. It is not affiliated with, endorsed by, or sponsored by Google. OKF is an open format from the Google knowledge-catalog repository, used here under its Apache 2.0 license.
-  </div>
-  <div style="margin-top: 12px;">Built by <a href="https://akeemjenkins.com" data-fast-goal="visit_personal_site">Akeem Jenkins</a></div>
 </footer>
 
 </body>
