@@ -51,7 +51,7 @@ const SITEMAP_XML = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://useokf.com/</loc>
-    <lastmod>2026-07-08</lastmod>
+    <lastmod>2026-07-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
@@ -65,6 +65,8 @@ const LLMS_TXT = [
   "> okf is a Go CLI toolkit for the Open Knowledge Format (OKF): agentic-first, JSON-native, and vendor-neutral. It is a single-binary alternative to Google's Python, Gemini, and BigQuery reference implementation, designed to be discovered and driven by any AI agent through a machine-readable schema.",
   "",
   "okf manages OKF bundles: directories of markdown concept files with YAML frontmatter, cross-linked into a knowledge graph. An agent loads the full CLI surface with one call (`okf schema`), drives commands that emit structured JSON on stdout (diagnostics go to stderr), recovers from typed error envelopes, and branches on exit codes that map one to one to error kinds (0 success, 1 validation, 2 io, 3 internal, 4 usage). JSON is the default, not an opt-in flag. okf is Go stdlib-only, Apache 2.0, and ships as a single binary with no runtime dependencies.",
+  "",
+  "As of v0.2.0, okf implements OKF spec v0.2 end to end: provenance (sources with credibility signals and usage windows), trust (generated, verified, and derived trust tiers: unverified, machine-confirmed, human-reviewed), lifecycle (status and stale_after staleness), and Attested Computation contracts (runtime, parameters, computation, executor, attester). Legacy v0.1 fields (timestamp, # Citations) still parse, with migration warnings.",
   "",
   "## Documentation",
   "",
@@ -84,11 +86,11 @@ const LLMS_TXT = [
   "- [okf version](https://github.com/okfcli/okf/blob/main/README.md): version info as JSON",
   "- [okf init](https://github.com/okfcli/okf/blob/main/README.md): scaffold a new OKF bundle (tables, datasets, playbooks)",
   "- [okf index](https://github.com/okfcli/okf/blob/main/README.md): generate index.md files for progressive disclosure",
-  "- [okf validate](https://github.com/okfcli/okf/blob/main/README.md): validate a bundle against the OKF spec, exit 1 on errors",
+  "- [okf validate](https://github.com/okfcli/okf/blob/main/README.md): validate a bundle against OKF v0.2 (frontmatter, links, trust, provenance, lifecycle, attested computations), exit 1 on errors",
   "- [okf lint](https://github.com/okfcli/okf/blob/main/README.md): warnings-only validation, exit 0",
-  "- [okf list](https://github.com/okfcli/okf/blob/main/README.md): list every concept as JSON",
+  "- [okf list](https://github.com/okfcli/okf/blob/main/README.md): list every concept with status and trust tier as JSON",
   "- [okf search](https://github.com/okfcli/okf/blob/main/README.md): filter concepts by tag, type, or text",
-  "- [okf show](https://github.com/okfcli/okf/blob/main/README.md): return a single concept's full content as JSON",
+  "- [okf show](https://github.com/okfcli/okf/blob/main/README.md): return a single concept's full content, trust and lifecycle state, sources, and computation contract as JSON",
   "- [okf graph](https://github.com/okfcli/okf/blob/main/README.md): build the cross-link graph with node, edge, and density stats",
   "- [okf backlinks](https://github.com/okfcli/okf/blob/main/README.md): reverse-link lookup for a concept",
   "",
@@ -109,7 +111,20 @@ const LLMS_FULL_TXT = [
   "- Website: https://useokf.com",
   "- Source: https://github.com/okfcli/okf (Apache 2.0)",
   "- Install: `brew install okfcli/okf/okf`",
-  "- Current release: v0.1.0 (cosign-signed, SBOM-included)",
+  "- Current release: v0.2.0 (cosign-signed, SBOM-included)",
+  "",
+  "## New in v0.2",
+  "",
+  "okf v0.2.0 implements OKF spec v0.2, which makes provenance, trust, lifecycle, and attestation first-class:",
+  "",
+  "- Trust tiers: every concept gets a derived tier from its `verified` events (unverified, machine-confirmed, human-reviewed), exposed by `okf list` and `okf show`.",
+  "- Provenance: `sources` entries with credibility signals (author, usage_count, last_modified) and usage windows. Body footnote labels join into source ids for per-claim attribution, and validation checks the join.",
+  "- Lifecycle: `status` (draft, stable, deprecated) and `stale_after`. Validation flags stale concepts; show reports the effective state.",
+  "- Attested Computations: a concept type carrying a sanctioned computation. The contract (runtime, parameters, computation, executor, attester) is fully validated, including that contract paths exist.",
+  "- Graph derivation edges: sources, computation, executor, and attester paths that resolve to concepts become edges in `okf graph` and `okf backlinks`.",
+  "- v0.1 compatibility: legacy `timestamp` and `# Citations` still parse with migration warnings, and bundles declare `okf_version` in the root index.md.",
+  "",
+  "Verified against all four reference bundles in Google's knowledge-catalog repository with zero errors.",
   "",
   "## Why okf exists",
   "",
@@ -122,7 +137,7 @@ const LLMS_FULL_TXT = [
   "",
   "## Commands",
   "",
-  "okf ships 11 commands in one binary with zero runtime dependencies. Built test-first, Go stdlib-only, Apache 2.0. Every command outputs structured JSON on stdout by default.",
+  "okf ships 11 commands in one binary with zero runtime dependencies. Built test-first (88 tests), Go stdlib-only, Apache 2.0. Every command outputs structured JSON on stdout by default.",
   "",
   "Schema and discovery:",
   "",
@@ -132,22 +147,22 @@ const LLMS_FULL_TXT = [
   "Create and structure:",
   "",
   "- `okf init`: scaffolds a new empty OKF bundle with standard subdirectories (tables, datasets, playbooks), a root index.md, and a .gitignore.",
-  "- `okf index`: generates index.md files into every directory for progressive disclosure per OKF spec section 6.",
+  "- `okf index`: generates index.md files into every directory for progressive disclosure per OKF spec section 8, preserving the bundle's okf_version declaration.",
   "",
   "Validate and quality:",
   "",
-  "- `okf validate`: checks every concept for required frontmatter (type), recommended fields (title, description, tags), non-empty body, and valid cross-links. Exits 1 if any errors are found.",
+  "- `okf validate`: checks every concept against OKF v0.2: required frontmatter, recommended fields, cross-links, the provenance, trust, and lifecycle families, attested-computation contracts, reserved-file structure, and legacy v0.1 constructs. Exits 1 if any errors are found.",
   "- `okf lint`: same checks as validate but only emits warnings. Exits 0 even with warnings.",
   "",
   "Explore and query:",
   "",
-  "- `okf list`: lists every concept document with its ID, type, and title as JSON.",
+  "- `okf list`: lists every concept document with its ID, type, title, lifecycle status, and trust tier as JSON.",
   "- `okf search`: filters concepts by tag, type, or text.",
-  "- `okf show`: returns a single concept's full content (ID, file path, frontmatter, and markdown body) as JSON.",
+  "- `okf show`: returns a single concept's full content (ID, file path, frontmatter, markdown body) plus trust tier, staleness, provenance sources, and the attested-computation contract when present, as JSON.",
   "",
   "Graph and relationships:",
   "",
-  "- `okf graph`: builds the directed cross-link graph and prints nodes, edges, density, and summary statistics.",
+  "- `okf graph`: builds the directed cross-link graph, including v0.2 derivation edges from sources, computations, executors, and attesters, and prints nodes, edges, density, and summary statistics.",
   "- `okf backlinks`: lists every concept that links to a given concept, a reverse-link lookup.",
   "",
   "## Agentic-first principle",
@@ -224,7 +239,7 @@ const HTML = `<!DOCTYPE html>
   "url": "https://useokf.com",
   "codeRepository": "https://github.com/okfcli/okf",
   "downloadUrl": "https://github.com/okfcli/okf/releases",
-  "softwareVersion": "0.1.0",
+  "softwareVersion": "0.2.0",
   "programmingLanguage": "Go",
   "license": "https://www.apache.org/licenses/LICENSE-2.0",
   "isAccessibleForFree": true,
@@ -235,7 +250,7 @@ const HTML = `<!DOCTYPE html>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🕸️</text></svg>">
 <style>
 :root {
-  /* neutrals — warm paper, light default */
+  /* neutrals - warm paper, light default */
   --paper: #f7f5f1;
   --paper-2: #efece5;
   --card: #ffffff;
@@ -245,7 +260,7 @@ const HTML = `<!DOCTYPE html>
   --ink-soft: #4a463f;
   --muted: #6b6557;
 
-  /* terminal panels — always dark in both modes */
+  /* terminal panels - always dark in both modes */
   --term-bg: #16130f;
   --term-text: #ece9e2;
 
@@ -354,7 +369,20 @@ header.nav {
   margin-bottom: 32px; position: relative;
   box-shadow: var(--shadow-sm);
 }
-.hero .badge .dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; }
+.hero .badge .dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; animation: pulseDot 2.4s ease-out infinite; }
+a.badge { color: var(--ink-soft); transition: border-color .2s, box-shadow .2s; }
+a.badge:hover { text-decoration: none; border-color: var(--accent); box-shadow: var(--shadow); }
+.hero .badge .new-chip {
+  font-family: var(--mono); font-size: 10.5px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.14em;
+  background: var(--accent-soft); color: var(--accent-deep);
+  padding: 2px 8px; border-radius: 999px;
+}
+@keyframes pulseDot {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--success) 55%, transparent); }
+  70% { box-shadow: 0 0 0 9px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
 .hero h1 {
   font-size: clamp(38px, 6vw, 62px);
   font-weight: 800; letter-spacing: -0.03em;
@@ -570,6 +598,7 @@ footer .disclaimer { margin-top: 16px; font-size: 0.75rem; max-width: 600px; mar
   <div class="wrap nav-inner">
     <a class="brand" href="/">okf<span class="dot">.</span></a>
     <nav class="nav-links">
+      <a class="hide-sm" href="#v02">What's New</a>
       <a class="hide-sm" href="#why">Why</a>
       <a class="hide-sm" href="#features">Commands</a>
       <a class="hide-sm" href="#agentic">Agentic First</a>
@@ -582,7 +611,7 @@ footer .disclaimer { margin-top: 16px; font-size: 0.75rem; max-width: 600px; mar
 
 <!-- Hero -->
 <div class="hero">
-  <div class="badge fade-up"><span class="dot"></span> v0.1.0 released, brew install okfcli/okf/okf</div>
+  <a class="badge fade-up" href="#v02"><span class="dot"></span> <span class="new-chip">New</span> v0.2.0 just shipped: trust tiers, provenance, attested computations →</a>
   <h1 class="fade-up fade-up-delay-1">The CLI your AI agent <em class="gradient">drives</em> to manage your knowledge graph</h1>
   <p class="sub fade-up fade-up-delay-2">okf is a Go CLI toolkit for the Open Knowledge Format: agentic-first, JSON-native, vendor-neutral. A single binary alternative to Google's Python/Gemini-locked reference implementation.</p>
   <div class="cta-group fade-up fade-up-delay-3">
@@ -616,6 +645,53 @@ footer .disclaimer { margin-top: 16px; font-size: 0.75rem; max-width: 600px; mar
 <span class="out">}</span></div>
   </div>
 </div>
+
+<!-- New in v0.2 -->
+<section id="v02">
+  <div class="section-label">New in v0.2</div>
+  <h2 class="section-title">Trust is now a first-class field</h2>
+  <p class="section-desc">okf v0.2.0 implements the new OKF v0.2 spec end to end: provenance, trust, lifecycle, and attested computations, all parsed, validated, and surfaced as JSON your agent can branch on. Verified against every reference bundle in Google's knowledge-catalog repository with zero errors.</p>
+
+  <div class="why-grid">
+    <div>
+      <div class="why-card">
+        <div class="label">TRUST TIERS</div>
+        <div class="desc">Every concept now gets a derived tier from its <code>verified</code> events: <code>unverified</code>, <code>machine-confirmed</code>, or <code>human-reviewed</code>. <code>okf list</code> and <code>okf show</code> expose it, so an agent can decide what to trust before it acts.</div>
+      </div>
+      <div class="why-card">
+        <div class="label">PROVENANCE</div>
+        <div class="desc">Concepts carry <code>sources</code> with per-source credibility signals: author, usage count, last modified. Body footnotes join into source ids for per-claim attribution, and <code>okf validate</code> checks the join both ways.</div>
+      </div>
+    </div>
+    <div>
+      <div class="why-card">
+        <div class="label">LIFECYCLE</div>
+        <div class="desc"><code>status</code> (draft, stable, deprecated) and <code>stale_after</code> make freshness a plain date comparison. Validation flags a stale concept the day it expires; nothing silently rots.</div>
+      </div>
+      <div class="why-card">
+        <div class="label">ATTESTED COMPUTATIONS</div>
+        <div class="desc">A new concept type carries a sanctioned computation: <code>runtime</code>, typed <code>parameters</code>, an <code>executor</code>, and a deterministic <code>attester</code>. okf validates the full contract, including that every contract path actually exists in the bundle.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="code-block" style="margin-top: 32px;"><span class="comment"># Trust and lifecycle, surfaced as JSON</span>
+<span class="cmd">$</span> okf list ./bundles/finance
+<span class="out">{</span>
+  <span class="key">"concepts"</span>: [
+    {<span class="key">"id"</span>:<span class="str">"computations/revenue"</span>, <span class="key">"type"</span>:<span class="str">"Attested Computation"</span>, <span class="key">"status"</span>:<span class="str">"stable"</span>, <span class="key">"trust_tier"</span>:<span class="str">"human-reviewed"</span>},
+    {<span class="key">"id"</span>:<span class="str">"metrics/margin-legacy"</span>, <span class="key">"type"</span>:<span class="str">"Metric"</span>, <span class="key">"status"</span>:<span class="str">"deprecated"</span>, <span class="key">"trust_tier"</span>:<span class="str">"machine-confirmed"</span>}
+  ]
+<span class="out">}</span>
+
+<span class="comment"># v0.1 bundles still work: legacy fields fall back, with migration warnings</span>
+<span class="cmd">$</span> okf validate ./old-bundle
+<span class="out">{</span>
+  <span class="key">"valid"</span>: <span class="ok">true</span>,
+  <span class="key">"warnings"</span>: <span class="ok">1</span>,
+  <span class="key">"findings"</span>: [{<span class="key">"severity"</span>:<span class="str">"WARN"</span>, <span class="key">"message"</span>:<span class="str">"frontmatter: legacy 'timestamp' is superseded by 'generated.at' in OKF v0.2 (§13.1)"</span>}]
+<span class="out">}</span></div>
+</section>
 
 <!-- Why -->
 <section id="why">
@@ -651,7 +727,7 @@ footer .disclaimer { margin-top: 16px; font-size: 0.75rem; max-width: 600px; mar
 <section id="features">
   <div class="section-label">What's inside</div>
   <h2 class="section-title">11 commands, one binary, zero runtime dependencies</h2>
-  <p class="section-desc">Built test-first (35 tests), Go stdlib-only, Apache 2.0. Every command outputs structured JSON on stdout by default. No <code>--json</code> flag, no screen-scraping.</p>
+  <p class="section-desc">Built test-first (88 tests), Go stdlib-only, Apache 2.0. Every command outputs structured JSON on stdout by default. No <code>--json</code> flag, no screen-scraping.</p>
 
   <div class="feature-group-label">Schema & Discovery</div>
   <div class="features" style="margin-bottom: 48px;">
@@ -677,7 +753,7 @@ footer .disclaimer { margin-top: 16px; font-size: 0.75rem; max-width: 600px; mar
     <div class="feature">
       <div class="icon">📇</div>
       <h3>okf index</h3>
-      <p>Generates <code>index.md</code> files into every directory for progressive disclosure per OKF spec §6. Agents navigate level by level instead of loading the entire bundle.</p>
+      <p>Generates <code>index.md</code> files into every directory for progressive disclosure per OKF spec §8, preserving the bundle's <code>okf_version</code> declaration. Agents navigate level by level instead of loading the entire bundle.</p>
     </div>
   </div>
 
@@ -686,7 +762,7 @@ footer .disclaimer { margin-top: 16px; font-size: 0.75rem; max-width: 600px; mar
     <div class="feature">
       <div class="icon">✅</div>
       <h3>okf validate</h3>
-      <p>Checks every concept for required frontmatter (<code>type</code>), recommended fields (<code>title</code>, <code>description</code>, <code>tags</code>), non-empty body, and valid cross-links. Exits 1 if any errors are found. The CI quality gate.</p>
+      <p>Checks every concept against OKF v0.2: required frontmatter, cross-links, the provenance, trust, and lifecycle families, attested-computation contracts, and legacy v0.1 constructs. Exits 1 if any errors are found. The CI quality gate.</p>
     </div>
     <div class="feature">
       <div class="icon">🧹</div>
@@ -700,7 +776,7 @@ footer .disclaimer { margin-top: 16px; font-size: 0.75rem; max-width: 600px; mar
     <div class="feature">
       <div class="icon">📋</div>
       <h3>okf list</h3>
-      <p>Lists every concept document with its ID, type, and title as JSON. The inventory query: what's in this bundle?</p>
+      <p>Lists every concept document with its ID, type, title, lifecycle status, and trust tier as JSON. The inventory query: what's in this bundle, and how much should I trust it?</p>
     </div>
     <div class="feature">
       <div class="icon">🔍</div>
@@ -710,7 +786,7 @@ footer .disclaimer { margin-top: 16px; font-size: 0.75rem; max-width: 600px; mar
     <div class="feature">
       <div class="icon">📄</div>
       <h3>okf show</h3>
-      <p>Returns a single concept's full content: ID, file path, frontmatter (type, title, description, resource, tags), and markdown body, all as JSON. The deep-read command.</p>
+      <p>Returns a single concept's full content: frontmatter, markdown body, trust tier, staleness, provenance sources, and the attested-computation contract when present, all as JSON. The deep-read command.</p>
     </div>
   </div>
 
@@ -719,7 +795,7 @@ footer .disclaimer { margin-top: 16px; font-size: 0.75rem; max-width: 600px; mar
     <div class="feature">
       <div class="icon">🕸️</div>
       <h3>okf graph</h3>
-      <p>Builds the directed cross-link graph from concept markdown links and prints nodes, edges, density, and summary statistics. Find orphan concepts and verify cross-link structure.</p>
+      <p>Builds the directed cross-link graph from markdown links plus v0.2 derivation edges (sources, computations, executors, attesters) and prints nodes, edges, density, and summary statistics. Find orphan concepts and verify structure.</p>
     </div>
     <div class="feature">
       <div class="icon">🔗</div>
@@ -790,7 +866,7 @@ footer .disclaimer { margin-top: 16px; font-size: 0.75rem; max-width: 600px; mar
 <section id="install">
   <div class="section-label">Get started</div>
   <h2 class="section-title">Install in 30 seconds</h2>
-  <p class="section-desc">v0.1.0 released, cosign-signed, SBOM-included. One binary, no runtime dependencies.</p>
+  <p class="section-desc">v0.2.0 released, cosign-signed, SBOM-included. One binary, no runtime dependencies.</p>
 
   <div class="install-grid">
     <div class="install-card">
